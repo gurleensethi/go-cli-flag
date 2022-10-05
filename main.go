@@ -87,6 +87,9 @@ func executeSearchRepos(args []string) error {
 
 func executeSearchUsers(args []string) error {
 	flagSet := flag.NewFlagSet("search-repos", flag.ExitOnError)
+
+	sort := flagSet.String("sort", "", "sort results by")
+
 	flagSet.Parse(args)
 
 	printDebug(fmt.Sprintf("[search-repos] Args: %s", flagSet.Args()))
@@ -99,7 +102,7 @@ func executeSearchUsers(args []string) error {
 
 	printDebug(fmt.Sprintf("[search-repos] Search Term: %s", searchTerm))
 
-	users, err := findUsers(searchTerm)
+	users, err := findUsers(searchTerm, *sort)
 	if err != nil {
 		return err
 	}
@@ -159,7 +162,7 @@ func findRepos(term string) ([]string, error) {
 	return repos, nil
 }
 
-func findUsers(term string) ([]string, error) {
+func findUsers(term, sort string) ([]string, error) {
 	type user struct {
 		Login string `json:"login"`
 	}
@@ -177,6 +180,7 @@ func findUsers(term string) ([]string, error) {
 
 	query := req.URL.Query()
 	query.Set("q", term)
+	query.Set("sort", sort)
 	req.URL.RawQuery = query.Encode()
 
 	// Make http request.
