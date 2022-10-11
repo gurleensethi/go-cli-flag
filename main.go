@@ -33,7 +33,7 @@ var (
 func main() {
 	flag.Parse()
 
-	if len(os.Args) < 2 {
+	if len(flag.Args()) < 1 {
 		fmt.Println(usage)
 		os.Exit(1)
 	}
@@ -62,16 +62,11 @@ func executeCommand(command string, args []string) error {
 }
 
 func executeSearchRepos(args []string) error {
-	flagSet := flag.NewFlagSet("search-repos", flag.ExitOnError)
-	flagSet.Parse(args)
-
-	printDebug(fmt.Sprintf("[search-repos] Args: %s", flagSet.Args()))
-
-	if len(flagSet.Args()) == 0 {
+	if len(args) == 0 {
 		return errors.New("provide a search term for searching repos: search-repos <search_term>")
 	}
 
-	searchTerm := flagSet.Args()[0]
+	searchTerm := args[0]
 
 	printDebug(fmt.Sprintf("[search-repos] Search Term: %s", searchTerm))
 
